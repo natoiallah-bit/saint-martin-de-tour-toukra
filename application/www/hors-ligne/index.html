@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saint Martin de Tour — hors ligne</title>
+  <link rel="stylesheet" href="hors-ligne.css">
+</head>
+<body>
+  <header>
+    <div class="titre">
+      <strong>Saint Martin de Tour</strong>
+      <span id="etat-reseau" class="pastille">…</span>
+    </div>
+    <div class="sous" id="entete-utilisateur"></div>
+  </header>
+
+  <main>
+    <!-- Connexion de l'appareil (une seule fois, avec le réseau) -->
+    <form id="ecran-connexion" class="bloc" hidden>
+      <h2>Connexion de cet appareil</h2>
+      <p class="aide">Une seule fois, avec le Wi-Fi de l'école. Ensuite, l'appel, les notes et les encaissements
+        se font même sans réseau ; ils partent au serveur dès que le réseau revient.</p>
+      <label>Serveur <span class="adresse" id="adresse-serveur"></span></label>
+      <label for="email">E-mail</label>
+      <input id="email" type="email" autocomplete="username" required>
+      <label for="mot-de-passe">Mot de passe</label>
+      <input id="mot-de-passe" type="password" autocomplete="current-password" required>
+      <label for="nom-appareil">Nom de cet appareil</label>
+      <input id="nom-appareil" type="text" maxlength="100" placeholder="Téléphone de M. Abakar" required>
+      <div class="erreur" id="erreur-connexion"></div>
+      <button type="submit">Connecter l'appareil</button>
+    </form>
+
+    <div id="ecran-travail" hidden>
+      <div class="barre">
+        <div class="aide" id="info-donnees"></div>
+        <div class="boutons">
+          <button type="button" class="secondaire" id="btn-telecharger">Mettre à jour les données</button>
+          <button type="button" id="btn-envoyer">Envoyer</button>
+        </div>
+      </div>
+
+      <nav id="onglets"></nav>
+
+      <!-- Appel -->
+      <section id="onglet-appel" class="bloc" hidden>
+        <div class="ligne">
+          <div><label for="appel-classe">Classe</label><select id="appel-classe"></select></div>
+          <div><label for="appel-date">Date</label><input id="appel-date" type="date"></div>
+        </div>
+        <label for="appel-cours">Cours</label>
+        <select id="appel-cours"></select>
+        <div id="appel-liste"></div>
+        <button type="button" id="appel-enregistrer">Enregistrer l'appel</button>
+      </section>
+
+      <!-- Notes -->
+      <section id="onglet-notes" class="bloc" hidden>
+        <div class="ligne">
+          <div><label for="notes-classe">Classe</label><select id="notes-classe"></select></div>
+          <div><label for="notes-matiere">Matière</label><select id="notes-matiere"></select></div>
+          <div><label for="notes-trimestre">Trimestre</label>
+            <select id="notes-trimestre"><option value="1">1er</option><option value="2">2e</option><option value="3">3e</option></select></div>
+        </div>
+        <div id="notes-grille"></div>
+        <button type="button" id="notes-enregistrer">Enregistrer les notes</button>
+      </section>
+
+      <!-- Encaissement -->
+      <section id="onglet-paiement" class="bloc" hidden>
+        <label for="paiement-recherche">Élève (nom ou matricule)</label>
+        <input id="paiement-recherche" type="search" autocomplete="off" placeholder="Tapez au moins 2 lettres">
+        <div id="paiement-resultats" class="resultats"></div>
+        <form id="paiement-formulaire" hidden>
+          <div id="paiement-eleve" class="fiche"></div>
+          <label>Objet du paiement</label>
+          <div id="paiement-types" class="cases"></div>
+          <div class="ligne">
+            <div><label for="paiement-montant">Montant (FCFA)</label><input id="paiement-montant" type="number" min="1" step="1" inputmode="numeric" required></div>
+            <div><label for="paiement-mode">Mode</label><select id="paiement-mode"></select></div>
+            <div><label for="paiement-date">Date</label><input id="paiement-date" type="date" required></div>
+          </div>
+          <label for="paiement-description">Remarque (facultatif)</label>
+          <input id="paiement-description" type="text" maxlength="200">
+          <div class="erreur" id="erreur-paiement"></div>
+          <button type="submit">Encaisser</button>
+        </form>
+        <div id="paiement-recu" class="recu" hidden></div>
+      </section>
+
+      <!-- Envois -->
+      <section id="onglet-envois" class="bloc" hidden>
+        <div id="envois-liste"></div>
+        <button type="button" class="secondaire" id="envois-nettoyer">Retirer les saisies déjà enregistrées</button>
+      </section>
+
+      <p class="pied">
+        <a href="../index.html">Ouvrir l'application en ligne</a> ·
+        <a href="#" id="lien-deconnexion">Déconnecter cet appareil</a>
+      </p>
+    </div>
+  </main>
+
+  <div id="message" class="message" hidden></div>
+
+  <script src="../adresse.js"></script>
+  <script src="logique.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

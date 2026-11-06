@@ -1,0 +1,14 @@
+// AJOUT à faire dans routes/web.php — ajoute ces lignes à la fin du
+// fichier :
+
+use App\Http\Controllers\EmploiTempsController;
+
+Route::get('/emplois-temps', [EmploiTempsController::class, 'choix'])->name('emplois-temps.choix');
+Route::get('/emplois-temps/{classe}', [EmploiTempsController::class, 'index'])->name('emplois-temps.index');
+Route::get('/emplois-temps/{classe}/creer', [EmploiTempsController::class, 'create'])->name('emplois-temps.create');
+Route::post('/emplois-temps/{classe}', [EmploiTempsController::class, 'store'])->name('emplois-temps.store');
+Route::get('/emplois-temps/{classe}/suggestion/{matiere}', [EmploiTempsController::class, 'suggestionEnseignant'])->name('emplois-temps.suggestion');
+Route::delete('/emplois-temps/{classe}/{emploiTemp}', [EmploiTempsController::class, 'destroy'])->name('emplois-temps.destroy');
+
+// N'oublie pas le "use App\Http\Controllers\EmploiTempsController;" en
+// haut du fichier avec les autres "use".

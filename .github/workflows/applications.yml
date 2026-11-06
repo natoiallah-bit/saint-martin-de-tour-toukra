@@ -1,0 +1,130 @@
+name: Applications Android et Windows
+
+# Fabrique l'application téléphone (.apk) et l'installateur Windows (.exe).
+# Les fichiers sont publiés dans « Releases » sous le numéro de version de
+# application/package.json (v1.0.0…) : changer ce numéro crée une nouvelle version,
+# sinon la version existante est mise à jour.
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+    paths: ['application/**', '.github/workflows/applications.yml']
+  # Sur une PR : fabrication pour vérifier, sans publication
+  pull_request:
+    paths: ['application/**', '.github/workflows/applications.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: application
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: application/package-lock.json
+      - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+      - run: npm test
+
+  android:
+    needs: tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: application
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: application/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+      - run: npm run android
+      - name: Construire l'APK
+        working-directory: application/android
+        env:
+          CLE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          if [ -n "$CLE_BASE64" ]; then
+            # APK signé avec la clé fixe de Saint Martin de Tour : les mises à jour s'installent par-dessus
+            echo "$CLE_BASE64" | base64 -d > "$RUNNER_TEMP/saintmartin.jks"
+            export ANDROID_KEYSTORE_FILE="$RUNNER_TEMP/saintmartin.jks"
+            ./gradlew assembleRelease --no-daemon
+            cp app/build/outputs/apk/release/app-release.apk ../SaintMartin.apk
+            rm -f "$RUNNER_TEMP/saintmartin.jks"
+          else
+            echo "::warning::Secret ANDROID_KEYSTORE_BASE64 absent : APK de test (clé temporaire), les mises à jour demanderont de désinstaller."
+            ./gradlew assembleDebug --no-daemon
+            cp app/build/outputs/apk/debug/app-debug.apk ../SaintMartin.apk
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: application/SaintMartin.apk
+
+  windows:
+    needs: tests
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: application
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: application/package-lock.json
+      - run: npm ci
+      - run: npm run exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: application/dist-electron/*.exe
+
+  publication:
+    needs: [android, windows]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: version
+        run: echo "tag=v$(node -p "require('./application/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v4
+        with:
+          path: fichiers
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Saint Martin de Tour ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          files: fichiers/*
+          body: |
+            **Téléphone Android** : téléchargez `SaintMartin.apk` sur le téléphone et ouvrez-le
+            (autorisez « installer des applications inconnues » si Android le demande).
+
+            **Ordinateur Windows** : téléchargez `SaintMartin-Installation-….exe` et lancez-le.
+
+            Au premier lancement, indiquez l'adresse du serveur de l'école (affichée par `demarrer.bat`,
+            par exemple `192.168.1.20:8000`), puis connectez-vous avec votre e-mail et votre mot de passe.

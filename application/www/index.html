@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saint Martin de Tour</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Connexion automatique au serveur déjà enregistré -->
+  <div class="carte" id="connexion" hidden>
+    <img src="icone.png" alt="">
+    <h1>Saint Martin de Tour</h1>
+    <div class="sous-titre">Gestion scolaire</div>
+    <p>Connexion au serveur de l'école…</p>
+    <div class="adresse" id="adresse-actuelle"></div>
+    <button class="secondaire" id="hors-ligne" type="button">Travailler hors ligne (appel, notes, encaissement)</button>
+    <button class="secondaire" id="changer" type="button">Changer d'adresse</button>
+  </div>
+
+  <!-- Première utilisation, ou changement d'adresse -->
+  <form class="carte" id="formulaire" hidden>
+    <img src="icone.png" alt="">
+    <h1>Saint Martin de Tour</h1>
+    <div class="sous-titre">Gestion scolaire</div>
+    <label for="adresse">Adresse du serveur de l'école</label>
+    <input id="adresse" type="url" inputmode="url" autocomplete="url" autocapitalize="off" spellcheck="false" placeholder="192.168.1.20:8000" required>
+    <div class="erreur" id="erreur"></div>
+    <p class="aide">
+      C'est l'adresse affichée par <code>demarrer.bat</code> sur l'ordinateur de l'école
+      (exemple : <code>192.168.1.20:8000</code>), ou celle de l'hébergement
+      (exemple : <code>https://ecole.exemple.td</code>).<br>
+      Le téléphone doit être sur le Wi-Fi de l'école, ou sur internet si l'application est hébergée.
+    </p>
+    <button type="submit">Se connecter</button>
+  </form>
+
+  <script src="adresse.js"></script>
+  <script>
+    var A = window.AdresseServeur;
+    var demandeChangement = /[?&]changer=1/.test(window.location.search);
+    var enregistree = A.lireAdresse();
+
+    function ouvrir(adresse) { window.location.href = adresse + '/'; }
+    function afficherFormulaire() {
+      document.getElementById('connexion').hidden = true;
+      document.getElementById('formulaire').hidden = false;
+      var champ = document.getElementById('adresse');
+      champ.value = enregistree ? enregistree.replace(/^http:\/\//, '') : '';
+      champ.focus();
+    }
+
+    if (enregistree && !demandeChangement) {
+      // Un court instant pour pouvoir changer d'adresse avant d'ouvrir l'application
+      document.getElementById('connexion').hidden = false;
+      document.getElementById('adresse-actuelle').textContent = enregistree;
+      var minuterie = setTimeout(function () { ouvrir(enregistree); }, 2000);
+      document.getElementById('changer').onclick = function () { clearTimeout(minuterie); afficherFormulaire(); };
+      document.getElementById('hors-ligne').onclick = function () { clearTimeout(minuterie); window.location.href = 'hors-ligne/index.html'; };
+    } else {
+      afficherFormulaire();
+    }
+
+    document.getElementById('formulaire').onsubmit = function (e) {
+      e.preventDefault();
+      var adresse = A.normaliserAdresse(document.getElementById('adresse').value);
+      if (!adresse) {
+        document.getElementById('erreur').textContent = "Cette adresse n'est pas valide.";
+        return;
+      }
+      A.enregistrerAdresse(adresse);
+      ouvrir(adresse);
+    };
+  </script>
+</body>
+</html>

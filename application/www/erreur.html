@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Serveur injoignable</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="carte">
+    <img src="icone.png" alt="">
+    <h1>Serveur injoignable</h1>
+    <div class="sous-titre">Saint Martin de Tour</div>
+    <p>L'application n'arrive pas à joindre le serveur de l'école :</p>
+    <div class="adresse" id="adresse"></div>
+    <p class="aide">
+      Vérifiez que :<br>
+      • l'appareil est connecté au Wi-Fi de l'école (ou à internet si l'application est hébergée) ;<br>
+      • l'ordinateur de l'école est allumé et que <code>demarrer.bat</code> (ou WAMP) tourne ;<br>
+      • l'adresse n'a pas changé (elle est affichée par <code>demarrer.bat</code>).
+    </p>
+    <button type="button" id="reessayer">Réessayer</button>
+    <button type="button" id="hors-ligne">Travailler hors ligne (appel, notes, encaissement)</button>
+    <button type="button" class="secondaire" id="changer">Changer d'adresse</button>
+  </div>
+  <script src="adresse.js"></script>
+  <script>
+    var adresse = window.AdresseServeur.lireAdresse();
+    document.getElementById('adresse').textContent = adresse || '(aucune adresse enregistrée)';
+    document.getElementById('reessayer').onclick = function () {
+      if (adresse) window.location.href = adresse + '/'; else window.location.href = 'index.html';
+    };
+    document.getElementById('hors-ligne').onclick = function () { window.location.href = 'hors-ligne/index.html'; };
+    document.getElementById('changer').onclick = function () { window.location.href = 'index.html?changer=1'; };
+  </script>
+</body>
+</html>

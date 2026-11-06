@@ -1,0 +1,14 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, Helvetica, sans-serif; background: #312c63; color: #20222b; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.carte { background: #fff; border-radius: 14px; max-width: 440px; width: 100%; padding: 26px 22px; box-shadow: 0 10px 40px rgba(0,0,0,.35); text-align: center; }
+.carte img { width: 76px; height: 76px; border-radius: 18px; margin-bottom: 10px; }
+h1 { font-size: 21px; color: #312c63; margin-bottom: 4px; }
+.sous-titre { font-size: 13px; color: #4b4699; font-weight: bold; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 18px; }
+label { display: block; text-align: left; font-weight: bold; font-size: 14px; margin-bottom: 6px; }
+input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #c9c2b0; border-radius: 8px; margin-bottom: 8px; }
+.aide { text-align: left; font-size: 12.5px; color: #5b5d6b; line-height: 1.5; margin-bottom: 16px; }
+.aide code { background: #f1ede4; padding: 1px 5px; border-radius: 4px; }
+button { width: 100%; padding: 13px; font-size: 16px; font-weight: bold; border: 0; border-radius: 8px; cursor: pointer; background: #312c63; color: #fff; margin-top: 4px; }
+button.secondaire { background: #eceaf7; color: #312c63; }
+.erreur { color: #a8503c; font-weight: bold; font-size: 13.5px; min-height: 18px; margin-bottom: 6px; }
+.adresse { font-family: monospace; font-size: 14px; background: #f1ede4; border-radius: 6px; padding: 8px; margin: 12px 0 16px; word-break: break-all; }

@@ -1,0 +1,14 @@
+{
+  "appId": "td.saintmartin.app",
+  "appName": "Saint Martin de Tour",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true,
+    "allowNavigation": ["*"],
+    "errorPath": "erreur.html"
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

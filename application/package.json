@@ -1,0 +1,47 @@
+{
+  "name": "saint-martin-application",
+  "productName": "Saint Martin de Tour",
+  "version": "1.2.0",
+  "description": "Application Windows et Android de la gestion scolaire Saint Martin de Tour : ouvre le serveur de l'école",
+  "private": true,
+  "main": "electron/main.cjs",
+  "author": "Complexe Scolaire Saint Martin de Tour de Toukra",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "electron": "electron .",
+    "exe": "electron-builder --win nsis --x64 --publish never",
+    "android": "cap sync android"
+  },
+  "build": {
+    "appId": "td.saintmartin.app",
+    "productName": "Saint Martin de Tour",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "www/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "www/icone.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Saint Martin de Tour",
+      "artifactName": "SaintMartin-Installation-${version}.${ext}"
+    }
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2",
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3"
+  }
+}
