@@ -12,9 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        //
-    })->withMiddleware(function (Middleware $middleware) {
+    ->withMiddleware(function (Middleware $middleware) {
+    // Licence terminée : lecture seule (voir App\Http\Middleware\LicenceActive)
+    $middleware->appendToGroup('web', \App\Http\Middleware\LicenceActive::class);
+    $middleware->appendToGroup('api', \App\Http\Middleware\LicenceActive::class);
     $middleware->alias([
         'role' => \App\Http\Middleware\EnsureRole::class,
         'excluderole' => \App\Http\Middleware\ExcludeRole::class,

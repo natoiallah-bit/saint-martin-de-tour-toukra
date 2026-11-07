@@ -48,6 +48,28 @@ Pour changer le nom ou le sigle en ligne de commande :
 php artisan ecole:identite "Nom complet" --court="Nom court" --sigle=SMT --quartier="…" --ville="N'Djamena" --telephone="66 00 00 00"
 ```
 
+## Licence et clé d'activation
+
+Le logiciel est sous licence propriétaire (fichier `LICENSE`) : l'école l'utilise, l'auteur en reste propriétaire. Les données de l'école lui appartiennent toujours.
+
+**Pour l'école (Direction)**
+- Une **période d'essai de 30 jours** démarre à l'installation.
+- Ensuite, il faut une **clé d'activation**, fournie par l'auteur : menu **Système, Licence**, collez la clé et enregistrez.
+- Un bandeau prévient **30 jours avant la fin**. Après la fin, **30 jours de tolérance** (bandeau rouge), puis l'application passe en **lecture seule** : tout reste consultable et sauvegardable, mais rien ne peut plus être modifié jusqu'au renouvellement. La connexion et la page Licence restent toujours ouvertes.
+- La clé est liée au **sigle de l'école** (SMT). Si le sigle change dans Paramètres, il faut une nouvelle clé.
+
+**Pour l'auteur : fabriquer une clé**
+```
+php outils/licence.php generer SMT "Complexe Scolaire Saint Martin de Tour de Toukra" 2027-11-06 licence-privee.key
+```
+La date est le dernier jour de validité. La clé obtenue est envoyée à l'école (WhatsApp, e-mail).
+
+- `licence-privee.key` est la clé qui **signe** les licences : gardez-la secrète, sauvegardez-la en plusieurs endroits, ne la mettez **jamais** sur GitHub (elle est dans `.gitignore`) ni chez l'école. Perdue, plus aucune clé ne peut être émise sans changer l'application.
+- Pour votre propre paire de clés : `php outils/licence.php paire`, puis collez la clé publique affichée dans `config/licence.php` (`cle_publique`).
+- Vérifier une clé : `php outils/licence.php verifier "CLE"`.
+
+Ce contrôle est un moyen de dissuasion et de gestion des renouvellements, pas une protection absolue : quelqu'un qui modifie le code peut le retirer. La vraie protection reste le contrat et la licence écrite.
+
 ## Sauvegarde et restauration (clé USB)
 
 **Faites une sauvegarde chaque jour**, sur le PC serveur, et gardez la clé hors de l'école.

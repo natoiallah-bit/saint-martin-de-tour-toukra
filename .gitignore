@@ -26,3 +26,7 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /public/uploads
+
+# Clé privée qui signe les clés d'activation : ne jamais la publier
+licence-privee.key
+*.licence-privee

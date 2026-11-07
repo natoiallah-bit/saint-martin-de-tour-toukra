@@ -10,7 +10,8 @@ Cette version est dérivée de l'application de gestion scolaire de la Cité du 
 - infirmerie ;
 - bibliothèque (livres et emprunts).
 
-Installation, sauvegarde, restauration et applications : voir [INSTALLATION.md](INSTALLATION.md).
+Logiciel sous licence propriétaire (voir [LICENSE](LICENSE)), avec clé d'activation.
+Installation, licence, sauvegarde, restauration et applications : voir [INSTALLATION.md](INSTALLATION.md).
 
 ## Développement
 

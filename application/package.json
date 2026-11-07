@@ -4,6 +4,7 @@
   "version": "1.2.0",
   "description": "Application Windows et Android de la gestion scolaire Saint Martin de Tour : ouvre le serveur de l'école",
   "private": true,
+  "license": "UNLICENSED",
   "main": "electron/main.cjs",
   "author": "Complexe Scolaire Saint Martin de Tour de Toukra",
   "scripts": {

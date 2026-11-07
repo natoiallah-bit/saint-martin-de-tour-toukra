@@ -227,6 +227,7 @@
             @if($role === 'direction')
                 <div class="menu-label">Système</div>
                 {!! $lien('parametres.index', 'Paramètres') !!}
+                {!! $lien('licence.index', 'Licence') !!}
                 {!! $lien('users.index', 'Comptes utilisateurs') !!}
                 {!! $lien('droits.index', 'Droits des rôles') !!}
                 {!! $lien('appareils.index', 'Appareils connectés') !!}
@@ -279,6 +280,19 @@
             @endauth
 
             <main>
+                @auth
+                    <?php $licence = \App\Support\Licence::etat(); ?>
+                    @if($licence['message'])
+                        <div class="alert" style="background:{{ $licence['statut'] === 'bientot' ? '#fff3d6' : '#fbe6df' }}; color:{{ $licence['statut'] === 'bientot' ? '#6b4e00' : '#7a2e1c' }};">
+                            {{ $licence['message'] }}
+                            @if(auth()->user()->role === 'direction')
+                                <a href="{{ route('licence.index') }}" style="color:inherit; font-weight:700;">Licence</a>
+                            @else
+                                Prévenez la Direction.
+                            @endif
+                        </div>
+                    @endif
+                @endauth
                 @if(session('success'))
                     <div class="alert">{{ session('success') }}</div>
                 @endif
