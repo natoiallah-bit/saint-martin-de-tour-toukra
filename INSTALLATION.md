@@ -142,3 +142,7 @@ Ajoutez deux secrets dans GitHub (Settings, puis Secrets and variables, puis Act
 Sans ces secrets, l'APK est une version de test. Chaque nouvelle version demande alors de désinstaller l'ancienne.
 
 Pour publier une nouvelle version, changez `version` dans `application/package.json` (par exemple `1.0.1`).
+
+
+## Hébergement en ligne
+Voir `docs/HEBERGEMENT-RAILWAY.md`. Pour restaurer une sauvegarde, copiez aussi le dossier `images-ecole` (logo, cachet) dans `public/images/ecole`.

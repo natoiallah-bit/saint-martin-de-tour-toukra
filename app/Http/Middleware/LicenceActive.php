@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 
 // Licence terminée au-delà de la tolérance : l'application reste consultable (GET) mais ne
-// permet plus de modifier les données. Connexion, déconnexion et page Licence restent ouvertes.
+// permet plus de modifier les données. Connexion, déconnexion, page Licence et sauvegarde restent ouvertes.
 class LicenceActive
 {
     public function handle(Request $request, Closure $next)
@@ -15,7 +15,7 @@ class LicenceActive
         if (in_array($request->method(), ['GET', 'HEAD', 'OPTIONS'], true)) {
             return $next($request);
         }
-        if ($request->is('login', 'logout', 'deconnexion-urgence', 'licence', 'licence/*', 'api/connexion', 'api/deconnexion')) {
+        if ($request->is('login', 'logout', 'deconnexion-urgence', 'licence', 'licence/*', 'sauvegarde', 'sauvegarde/*', 'api/connexion', 'api/deconnexion')) {
             return $next($request);
         }
 

@@ -13,6 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+    // Hébergement derrière un proxy HTTPS (Railway) : TRUSTED_PROXIES=* pour garder https dans les liens
+    if ($proxies = env('TRUSTED_PROXIES')) {
+        $middleware->trustProxies(at: $proxies === '*' ? '*' : array_map('trim', explode(',', $proxies)));
+    }
     // Licence terminée : lecture seule (voir App\Http\Middleware\LicenceActive)
     $middleware->appendToGroup('web', \App\Http\Middleware\LicenceActive::class);
     $middleware->appendToGroup('api', \App\Http\Middleware\LicenceActive::class);

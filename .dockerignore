@@ -1,0 +1,15 @@
+.git
+vendor
+node_modules
+application
+tests
+storage/logs/*
+storage/framework/sessions/*
+storage/framework/cache/*
+storage/framework/views/*
+storage/app/private/*
+.env
+*.sqlite
+licence-privee.key
+*.licence-privee
+*.bat

@@ -74,56 +74,51 @@ Artisan::command('ecole:sauvegarder {destination : dossier ou lettre de la clé,
         return 1;
     }
 
-    $dossier = $racine . '/Sauvegardes-' . Str::studly(Str::slug(\App\Support\Etablissement::nomCourt())) . '/' . now()->format('Y-m-d_H\hi');
-    \Illuminate\Support\Facades\File::ensureDirectoryExists($dossier);
-    $connexion = config('database.default');
-    $config = config("database.connections.$connexion");
+    $dossier = $racine . '/' . \App\Support\Sauvegarde::nomDossier() . '/' . now()->format('Y-m-d_H\hi');
+    try {
+        $resume = \App\Support\Sauvegarde::creer($dossier);
+    } catch (\RuntimeException $e) {
+        $this->error($e->getMessage());
 
-    // 1. Base de données
-    if ($config['driver'] === 'sqlite') {
-        // VACUUM INTO : copie cohérente même si l'application est ouverte
-        $cible = $dossier . '/database.sqlite';
-        \Illuminate\Support\Facades\DB::statement('VACUUM INTO ?', [$cible]);
-        $this->info('Base SQLite copiée.');
-    } else {
-        $mysqldump = env('MYSQLDUMP_PATH') ?: collect(glob('C:/wamp64/bin/mysql/mysql*/bin/mysqldump.exe') ?: [])->last() ?: 'mysqldump';
-        $cible = $dossier . '/base.sql';
-        $commande = [$mysqldump, '--host=' . $config['host'], '--port=' . $config['port'], '--user=' . $config['username'],
-            '--single-transaction', '--routines', '--default-character-set=utf8mb4', '--result-file=' . $cible, $config['database']];
-        if ((string) $config['password'] !== '') {
-            array_splice($commande, 4, 0, ['--password=' . $config['password']]);
-        }
-        $resultat = \Illuminate\Support\Facades\Process::run($commande);
-        if (! $resultat->successful() || ! is_file($cible)) {
-            $this->error('Export MySQL impossible : ' . trim($resultat->errorOutput()) . ' (WAMP est-il démarré ?)');
-            return 1;
-        }
-        $this->info('Base MySQL exportée (base.sql).');
+        return 1;
     }
-
-    // 2. Photos, justificatifs et documents
-    if (is_dir(storage_path('app'))) {
-        \Illuminate\Support\Facades\File::copyDirectory(storage_path('app'), $dossier . '/storage-app');
-        $this->info('Photos et documents copiés.');
-    }
-
-    // 3. Fiche de contrôle : ce que contient la sauvegarde
-    $resume = [
-        'Sauvegarde du ' . now()->format('d/m/Y à H:i'),
-        'Base : ' . ($config['driver'] === 'sqlite' ? 'SQLite (database.sqlite)' : 'MySQL (base.sql)'),
-        'Élèves : ' . \App\Models\Eleve::count(),
-        'Classes : ' . \App\Models\ClasseScolaire::count(),
-        'Paiements : ' . \App\Models\Paiement::count(),
-        'Personnel : ' . \App\Models\Personnel::count(),
-        '',
-        'Restaurer : voir INSTALLATION.md, partie « Sauvegarde et restauration ».',
-    ];
-    file_put_contents($dossier . '/LISEZMOI.txt', implode(PHP_EOL, $resume) . PHP_EOL);
 
     $this->newLine();
     $this->info('Sauvegarde terminée : ' . str_replace('/', DIRECTORY_SEPARATOR, $dossier));
     $this->line('  ' . $resume[2] . ' · ' . $resume[3] . ' · ' . $resume[4]);
 })->purpose('Sauvegarde la base et les fichiers sur une clé USB');
+
+// Premier compte Direction d'un hébergement en ligne (aucun compte par défaut avec mot de passe connu).
+// Sans argument, lit ECOLE_ADMIN_EMAIL, ECOLE_ADMIN_MOT_DE_PASSE et ECOLE_ADMIN_NOM. Ne fait rien si une Direction existe déjà.
+Artisan::command('ecole:premier-compte {email? : adresse de connexion} {motdepasse? : 10 caractères au moins} {--nom=}', function () {
+    $email = trim((string) ($this->argument('email') ?? env('ECOLE_ADMIN_EMAIL', '')));
+    $motdepasse = (string) ($this->argument('motdepasse') ?? env('ECOLE_ADMIN_MOT_DE_PASSE', ''));
+    $nom = trim((string) ($this->option('nom') ?? env('ECOLE_ADMIN_NOM', ''))) ?: 'Direction';
+
+    if (\App\Models\User::where('role', 'direction')->exists()) {
+        $this->line('Un compte Direction existe déjà : rien à faire.');
+
+        return 0;
+    }
+    if ($email === '' || $motdepasse === '') {
+        $this->warn('Aucun compte Direction. Définissez ECOLE_ADMIN_EMAIL et ECOLE_ADMIN_MOT_DE_PASSE, ou lancez : php artisan ecole:premier-compte EMAIL MOTDEPASSE');
+
+        return 0;
+    }
+    if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $this->error('Adresse e-mail invalide.');
+
+        return 1;
+    }
+    if (mb_strlen($motdepasse) < 10) {
+        $this->error('Le mot de passe doit avoir 10 caractères au moins.');
+
+        return 1;
+    }
+
+    \App\Models\User::create(['name' => $nom, 'email' => $email, 'password' => \Illuminate\Support\Facades\Hash::make($motdepasse), 'role' => 'direction']);
+    $this->info("Compte Direction créé : {$email}");
+})->purpose('Crée le premier compte Direction (hébergement en ligne)');
 
 // Identité d'une nouvelle école, avant sa première connexion (le reste se règle dans Paramètres)
 Artisan::command('ecole:identite {nom : nom complet, ex. "Complexe Scolaire Saint Martin de Tours"}

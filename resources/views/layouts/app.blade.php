@@ -228,6 +228,7 @@
                 <div class="menu-label">Système</div>
                 {!! $lien('parametres.index', 'Paramètres') !!}
                 {!! $lien('licence.index', 'Licence') !!}
+                {!! $lien('sauvegarde.index', 'Sauvegarde') !!}
                 {!! $lien('users.index', 'Comptes utilisateurs') !!}
                 {!! $lien('droits.index', 'Droits des rôles') !!}
                 {!! $lien('appareils.index', 'Appareils connectés') !!}

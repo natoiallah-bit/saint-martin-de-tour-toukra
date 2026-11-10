@@ -39,6 +39,7 @@ use App\Http\Controllers\FichePassageController;
 use App\Http\Controllers\FichierController;
 use App\Http\Controllers\DroitController;
 use App\Http\Controllers\LicenceController;
+use App\Http\Controllers\SauvegardeController;
 use App\Http\Controllers\ConseilClasseController;
 
 /*
@@ -113,6 +114,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/droits-roles/defaut', [DroitController::class, 'retablir'])->name('droits.retablir');
         Route::get('/licence', [LicenceController::class, 'index'])->name('licence.index');
         Route::post('/licence', [LicenceController::class, 'activer'])->name('licence.activer');
+        Route::get('/sauvegarde', [SauvegardeController::class, 'index'])->name('sauvegarde.index');
+        Route::post('/sauvegarde', [SauvegardeController::class, 'telecharger'])->name('sauvegarde.telecharger');
         Route::get('/parametres', [ParametresController::class, 'index'])->name('parametres.index');
         Route::put('/parametres', [ParametresController::class, 'update'])->name('parametres.update');
         Route::get('/appareils', [\App\Http\Controllers\AppareilController::class, 'index'])->name('appareils.index');
